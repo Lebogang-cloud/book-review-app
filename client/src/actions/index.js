@@ -1,45 +1,34 @@
-import axios from "axios";
 
 
 
-export function getBooks(limit = 10, start = 0, order = "asc", list = "") {
-  const request = axios
-    .get(`/api/books?limit=${limit}&skip=${start}&order=${order}`)
-    .then((response) => {
-      if (list) {
-        return [...list, ...response.data];
-      } else {
-        return response.data;
-      }
-    });
+let url = "http://localhost:3000";
 
-  return {
+export const getBooks = () => dispatch => {
+  fetch(`${url}/api/books`)
+    .then(response => response.json())
+    .then(data =>
+    dispatch({
     type: "GET_BOOKS",
-    payload: request,
-  };
+    payload: data
+  })
+  )
 }
 
-export function getBookWithReviewer(id) {
-  const request = axios.get(`/api/getBook?id=${id}`);
-
-  return (dispatch) => {
-    request.then(({ data }) => {
-      let book = data;
-      console.log(data);
-
-      axios.get(`/api/getReviewer?id=${book.ownerID}`).then(({ data }) => {
-        let response = {
-          book,
-          reviewer: data,
-        };
-
-        dispatch({
+export const getBookWithReviewer = (id) => dispatch => {
+  fetch(`${url}/api/getReviewer/${id}`,{
+    headers : { 
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+     }
+  
+  })
+  .then(response => response.json())
+  .then(response => 
+    dispatch({
           type: "GET_BOOK_W_REVIEWER",
-          payload: response,
-        });
-      });
-    });
-  };
+          payload: response
+        })
+  )
 }
 
 export function clearBookWithReviewer() {
@@ -52,15 +41,22 @@ export function clearBookWithReviewer() {
   };
 }
 
-export function addBook(book) {
-  const request = axios
-    .post("/api/book", book)
-    .then(response => response.data);
+export const addBook = book => dispatch => {
+  fetch(`${url}/api/book`,{
+    method:'POST',
+    headers:{
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(book)
+  })
+    .then(response => response.json())
+    .then(request =>
 
-  return {
+  dispatch({
     type: "ADD_BOOK",
     payload: request,
-  };
+  })
+)
 }
 
 export function clearNewBook() {
@@ -70,45 +66,60 @@ export function clearNewBook() {
   };
 }
 
-export function getUserPosts(userId) {
-  const request = axios.get(`/api/user_posts?user=${userId}`)
-                .then(response => response.data)
+export const getUserPosts = (userId) => dispatch => {
+  fetch(`${url}/api/user_posts/${userId}`)
+    .then(response => response.json())
+    .then(request =>
 
-  return {
+  dispatch({
     type: 'GET_USER_POSTS',
     payload:request
-  }
+  })
+    )
 }
 
-export function getBook(id){
-  const request = axios.get(`/api/getBook?id=${id}`)
-                .then(response => response.data);
+export const getBook = (id) => dispatch => {
+  fetch(`${url}/api/getBook?id=${id}`)
+                .then(response => response.json())
+                .then(request =>
 
-        return {
+        dispatch({
           type:'GET_BOOK',
           payload:request
-        }
+        })
+   )
 }
 
-export function updateBook(data){
-  const request = axios.put(`/api/book_update`,data)
-                  .then(response => response.data);
+export const updateBook = data => dispatch => {
+  fetch('http://localhost:3000/api/book_update', {
+    method:'PUT',
+    headers:{
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+    .then(response => response.json())
+    .then(request =>
 
-      return {
+    dispatch({
         type:'UPDATE_BOOK',
         payload:request
-      }
+      })
+    )
 }
 
-export function deleteBook(id){
-  const request = axios.delete(`/api/delete_book?id=${id}`)
-                .then(response => response.data);
+export const deleteBook = (id)=> dispatch =>{
+  fetch(`${url}/api/delete_book?id=${id}`,{
+    method: 'DELETE'
+  })
+  .then(response => response.data)
+  .then(request =>
 
-        return {
+        dispatch({
           type: 'DELETE_BOOK',
           payload:request
-        }
-
+        })
+  )
 }
 
 export function clearBook(){
@@ -124,53 +135,83 @@ export function clearBook(){
 
 // ==========USER==========
 
-export function loginUser({ email, password }) {
-  const request = axios
-    .post("/api/login", { email, password })
-    .then((response) => response.data);
+export const loginUser = ({email, password}) => dispatch => {
+  fetch(`${url}/api/login`,{
+    method: 'POST',
+    header: {
+      'content-type' : 'application-type'
+    },
+    body: JSON.stringify({
+      email: email,
+      password: password
 
-  return {
+    })
+  })
+    .then((response) => response.json())
+    .then(request =>
+
+  dispatch({
     type: "USER_LOGIN",
     payload: request,
-  };
+  })
+    )
 }
 
-export function auth() {
-  const request = axios.get(`/api/auth`)
-    .then((response) => response.data);
+export const auth = () => dispatch => {
+  let h = new Headers();
+  h.append('Accept', 'application/json');
+  let encoded = window.btoa('tony@gmail.com:password123');
+  let auth ='Basic' + encoded;
+  h.append('Authorization',auth);
 
-  return {
+  let req = new Request(`${url}/api/auth`,{
+    method: 'GET',
+    header: h,
+    credentials: 'include'
+  })
+
+  fetch(req)
+    .then(response => response.json())
+    .then(request =>
+
+  dispatch({
     type: "USER_AUTH",
     payload: request,
-  };
+  })
+    )
 }
 
-export function getUsers(){
-      const request = axios.get(`/api/users`)
-                    .then(response => response.data);
+export const getUsers = () => dispatch => {
+      fetch(`${url}/api/users`)
+        .then(response => response.data)
+        .then(request =>
 
-        return {
+        dispatch({
           type:'GET_USER',
           payload:request
-        }
+        })
+        )
 }
 
-export function userRegister(user,userList){
-  const request = axios.post(`/api/register`,user)
+export const userRegister = (user,userList) => dispatch => {
+  fetch(`${url}/api/register`,{
+    method: 'POST',
+    header:{
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(user, userList)
+  })
 
-  return (dispatch) =>{
-    request.then(({data})=>{
-      let users = data.success ? [...userList,data.user] :userList;
-      let response = {
-        success:data.success,
-        users
-      }
+  .then(response => response.json())
+  .then(response =>
 
+      
       dispatch({
         type:'USER_REGISTER',
         payload:response
       })
-    })
-  }
-  
+  )
 }
+
+
+

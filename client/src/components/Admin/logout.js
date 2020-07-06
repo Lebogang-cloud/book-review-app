@@ -1,22 +1,30 @@
-import React from 'react';
-import axios from 'axios';
+import React, {Component } from 'react';
+import { connect} from 'react-redux';
 
-const Logout = (props)=> {
 
-    let request = axios.get(`/api/logout`)   
-                .then(request =>{
-                    setTimeout(() => {
-                        props.history.push('/')
-                    },2000);
-                })
+
+class Logout extends Component {
+
+    componentWillUnmount() {
+        this.props.dispatch(this.props.history.push('/'))
+    }
+
+    render(){
 
     return (
         <div className="logout_container">
             <h1>
-                Sorry to see you go :(
+                Bye:)
             </h1>
         </div>
     )
+    }
 }
 
-export default Logout;
+function mapStateToProps(state) {
+    return {
+        user: state.user
+    }
+}
+
+export default connect(mapStateToProps)(Logout)
