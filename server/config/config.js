@@ -1,14 +1,13 @@
-require('dotenv').config()
-
 const config = {
     production:{
-        SECRET: process.env.SECRET_KEY,
+        SECRET: process.env.SECRET,
         DATABASE: process.env.MONGODB_URI
 
     },
     default:{
-        SECRET: 'env',
-        DATABASE: 'env'
+        SECRET: 'SUPERSECRETPASSWORD1447',
+        DATABASE: 'mongodb://localhost:27017/booksReview'
+
     }
 }
 
