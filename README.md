@@ -1,5 +1,5 @@
 # book-review-app
-# book-review-app
+
 App development
 
 About
@@ -26,9 +26,10 @@ You almost never need to update create-react-app itself: it delegates all the se
 
 To find the version you’re currently on (check package.json in this folder if you’re not sure), 
 
-Folder Structure
+Instructions to run app:
 
-Available Scripts
+    npm init
+    npm run dev
 
 In the project directory, you can run:
 
